@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import "./App.css";
 
@@ -11,7 +12,7 @@ import {
 
 import { auth } from "./firebase";
 
-const API_URL = "http://localhost:5000/api/photos";
+const API_URL = "https://photonest-zlkp.onrender.com/api/photos";
 const DELETED_KEY = "photonest_deleted_sample_photos";
 const EDITED_KEY = "photonest_edited_sample_photos";
 
@@ -163,6 +164,7 @@ export default function App() {
     }
 
     fetchPhotos();
+
     return () => {
       cancelled = true;
     };
@@ -240,7 +242,9 @@ export default function App() {
           "Network error. Check your internet connection.",
       };
 
-      setAuthMessage(messages[error.code] || error.message || "Authentication failed.");
+      setAuthMessage(
+        messages[error.code] || error.message || "Authentication failed."
+      );
     } finally {
       setLoading(false);
     }
@@ -273,7 +277,9 @@ export default function App() {
 
     if (!title || title.length > 150) {
       showPhotoMessage(
-        !title ? "Please enter a photo title." : "Title cannot exceed 150 characters.",
+        !title
+          ? "Please enter a photo title."
+          : "Title cannot exceed 150 characters.",
         "error"
       );
       return;
@@ -329,6 +335,7 @@ export default function App() {
       category: photo.category || "",
       description: photo.description || "",
     });
+
     setShowAddForm(false);
     setShowEditManager(true);
     setPhotoMessage("");
@@ -348,7 +355,9 @@ export default function App() {
 
     if (!title || title.length > 150) {
       showPhotoMessage(
-        !title ? "Please enter a photo title." : "Title cannot exceed 150 characters.",
+        !title
+          ? "Please enter a photo title."
+          : "Title cannot exceed 150 characters.",
         "error"
       );
       return;
@@ -412,6 +421,7 @@ export default function App() {
       );
 
       cancelEditing();
+
       showPhotoMessage(
         String(editingPhotoId).startsWith("sample-")
           ? "Sample photo updated in this browser."
@@ -427,12 +437,17 @@ export default function App() {
 
   async function handleDeletePhoto(photo) {
     const id = getPhotoId(photo);
+
     if (!id) {
       showPhotoMessage("This photo does not have a valid ID.", "error");
       return;
     }
 
-    if (!window.confirm(`Are you sure you want to delete "${photo.title || "this photo"}"?`)) {
+    if (
+      !window.confirm(
+        `Are you sure you want to delete "${photo.title || "this photo"}"?`
+      )
+    ) {
       return;
     }
 
@@ -441,8 +456,12 @@ export default function App() {
     try {
       if (String(id).startsWith("sample-")) {
         const deleted = readStorage(DELETED_KEY, []);
+
         if (!deleted.includes(id)) {
-          localStorage.setItem(DELETED_KEY, JSON.stringify([...deleted, id]));
+          localStorage.setItem(
+            DELETED_KEY,
+            JSON.stringify([...deleted, id])
+          );
         }
 
         const edited = readStorage(EDITED_KEY, {});
@@ -455,6 +474,7 @@ export default function App() {
         });
 
         let result = {};
+
         try {
           result = await response.json();
         } catch {
@@ -484,6 +504,7 @@ export default function App() {
 
   async function handleDownload(photo) {
     const imageUrl = getPhotoUrl(photo);
+
     if (!imageUrl) {
       window.alert("Image URL is not available.");
       return;
@@ -496,6 +517,7 @@ export default function App() {
       if (!response.ok) throw new Error("Download failed.");
 
       objectUrl = URL.createObjectURL(await response.blob());
+
       const link = document.createElement("a");
       link.href = objectUrl;
       link.download = `${(photo.title || "photonest-photo").replace(
@@ -521,18 +543,22 @@ export default function App() {
         setSelectedPhoto(null);
         setShowLogin(false);
         setShowAddForm(false);
+
         if (!updatingPhoto) cancelEditing();
       }
     }
 
     window.addEventListener("keydown", handleKeyDown);
+
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [updatingPhoto]);
 
   return (
     <div className="app">
       <header className="navbar">
-        <a className="logo" href="#home">Photo<span>nest</span></a>
+        <a className="logo" href="#home">
+          Photo<span>nest</span>
+        </a>
 
         <nav className="nav-links">
           <a href="#home">Home</a>
@@ -546,7 +572,10 @@ export default function App() {
               <span className="user-greeting">
                 Hi, {currentUser.displayName || currentUser.email}
               </span>
-              <button className="login-btn" onClick={handleLogout}>Logout</button>
+
+              <button className="login-btn" onClick={handleLogout}>
+                Logout
+              </button>
             </>
           ) : (
             <>
@@ -560,6 +589,7 @@ export default function App() {
               >
                 Login
               </button>
+
               <button
                 className="signup-btn"
                 onClick={() => {
@@ -578,19 +608,31 @@ export default function App() {
       <main id="home">
         <section className="hero">
           <p className="tagline">DISCOVER YOUR NEXT INSPIRATION</p>
-          <h1>Every picture tells<br />a beautiful <span>story.</span></h1>
+
+          <h1>
+            Every picture tells
+            <br />
+            a beautiful <span>story.</span>
+          </h1>
+
           <p className="description">
             Explore beautiful photographs and find inspiration.
           </p>
 
-          <form className="search-box" onSubmit={(event) => event.preventDefault()}>
+          <form
+            className="search-box"
+            onSubmit={(event) => event.preventDefault()}
+          >
             <input
               type="search"
               placeholder="Search nature, travel, ocean, cat..."
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
-            <button type="submit" className="search-btn">Search</button>
+
+            <button type="submit" className="search-btn">
+              Search
+            </button>
           </form>
 
           <p className="popular">
@@ -608,6 +650,7 @@ export default function App() {
                   >
                     {category}
                   </button>
+
                   {index < 4 ? " · " : ""}
                 </span>
               )
@@ -656,7 +699,11 @@ export default function App() {
             {categories.map((category) => (
               <button
                 key={category}
-                className={selectedCategory === category ? "category-btn active" : "category-btn"}
+                className={
+                  selectedCategory === category
+                    ? "category-btn active"
+                    : "category-btn"
+                }
                 onClick={() => setSelectedCategory(category)}
               >
                 {category}
@@ -680,7 +727,9 @@ export default function App() {
                 maxLength={150}
                 required
                 value={photoForm.title}
-                onChange={(event) => setPhotoForm({ ...photoForm, title: event.target.value })}
+                onChange={(event) =>
+                  setPhotoForm({ ...photoForm, title: event.target.value })
+                }
                 placeholder="Enter photo title"
               />
 
@@ -690,7 +739,9 @@ export default function App() {
                 type="url"
                 required
                 value={photoForm.imageUrl}
-                onChange={(event) => setPhotoForm({ ...photoForm, imageUrl: event.target.value })}
+                onChange={(event) =>
+                  setPhotoForm({ ...photoForm, imageUrl: event.target.value })
+                }
                 placeholder="https://example.com/image.jpg"
               />
 
@@ -698,7 +749,9 @@ export default function App() {
               <input
                 id="add-category"
                 value={photoForm.category}
-                onChange={(event) => setPhotoForm({ ...photoForm, category: event.target.value })}
+                onChange={(event) =>
+                  setPhotoForm({ ...photoForm, category: event.target.value })
+                }
                 placeholder="Nature, Travel, Animals..."
               />
 
@@ -707,14 +760,24 @@ export default function App() {
                 id="add-description"
                 rows={3}
                 value={photoForm.description}
-                onChange={(event) => setPhotoForm({ ...photoForm, description: event.target.value })}
+                onChange={(event) =>
+                  setPhotoForm({
+                    ...photoForm,
+                    description: event.target.value,
+                  })
+                }
                 placeholder="Describe this photo"
               />
 
               <div className="form-actions">
-                <button className="signup-btn" type="submit" disabled={savingPhoto}>
+                <button
+                  className="signup-btn"
+                  type="submit"
+                  disabled={savingPhoto}
+                >
                   {savingPhoto ? "Saving..." : "Save Photo"}
                 </button>
+
                 <button
                   className="login-btn"
                   type="button"
@@ -737,11 +800,15 @@ export default function App() {
                   <h3>Photo Manager</h3>
                   <p>Select a photo to edit or delete it.</p>
                 </div>
+
                 <span className="manager-count">{photos.length} photos</span>
               </div>
 
               {editingPhotoId && (
-                <form className="photo-form edit-form" onSubmit={handleUpdatePhoto}>
+                <form
+                  className="photo-form edit-form"
+                  onSubmit={handleUpdatePhoto}
+                >
                   <h3>Edit photo details</h3>
 
                   <label htmlFor="edit-title">Photo title</label>
@@ -750,7 +817,9 @@ export default function App() {
                     maxLength={150}
                     required
                     value={editForm.title}
-                    onChange={(event) => setEditForm({ ...editForm, title: event.target.value })}
+                    onChange={(event) =>
+                      setEditForm({ ...editForm, title: event.target.value })
+                    }
                   />
 
                   <label htmlFor="edit-url">Image URL</label>
@@ -759,14 +828,18 @@ export default function App() {
                     type="url"
                     required
                     value={editForm.imageUrl}
-                    onChange={(event) => setEditForm({ ...editForm, imageUrl: event.target.value })}
+                    onChange={(event) =>
+                      setEditForm({ ...editForm, imageUrl: event.target.value })
+                    }
                   />
 
                   <label htmlFor="edit-category">Category</label>
                   <input
                     id="edit-category"
                     value={editForm.category}
-                    onChange={(event) => setEditForm({ ...editForm, category: event.target.value })}
+                    onChange={(event) =>
+                      setEditForm({ ...editForm, category: event.target.value })
+                    }
                   />
 
                   <label htmlFor="edit-description">Description</label>
@@ -774,14 +847,29 @@ export default function App() {
                     id="edit-description"
                     rows={3}
                     value={editForm.description}
-                    onChange={(event) => setEditForm({ ...editForm, description: event.target.value })}
+                    onChange={(event) =>
+                      setEditForm({
+                        ...editForm,
+                        description: event.target.value,
+                      })
+                    }
                   />
 
                   <div className="form-actions">
-                    <button className="signup-btn" type="submit" disabled={updatingPhoto}>
+                    <button
+                      className="signup-btn"
+                      type="submit"
+                      disabled={updatingPhoto}
+                    >
                       {updatingPhoto ? "Updating..." : "Update Photo"}
                     </button>
-                    <button className="login-btn" type="button" disabled={updatingPhoto} onClick={cancelEditing}>
+
+                    <button
+                      className="login-btn"
+                      type="button"
+                      disabled={updatingPhoto}
+                      onClick={cancelEditing}
+                    >
                       Cancel Edit
                     </button>
                   </div>
@@ -794,12 +882,21 @@ export default function App() {
 
                   return (
                     <article className="manager-item" key={id}>
-                      <PhotoImage src={getPhotoUrl(photo)} alt={photo.title} className="manager-thumb" />
+                      <PhotoImage
+                        src={getPhotoUrl(photo)}
+                        alt={photo.title}
+                        className="manager-thumb"
+                      />
 
                       <div className="manager-item-info">
                         <strong>{photo.title || "Untitled photo"}</strong>
                         <span>{photo.category || "Other"}</span>
-                        <small>{String(id).startsWith("sample-") ? "Sample photo · Browser storage" : "Database photo · MongoDB"}</small>
+
+                        <small>
+                          {String(id).startsWith("sample-")
+                            ? "Sample photo · Browser storage"
+                            : "Database photo · MongoDB"}
+                        </small>
                       </div>
 
                       <div className="manager-item-actions">
@@ -809,6 +906,7 @@ export default function App() {
                         >
                           Edit
                         </button>
+
                         <button
                           className="photo-action-btn delete-btn"
                           disabled={deletingPhotoId === id}
@@ -836,18 +934,36 @@ export default function App() {
                     onClick={() => setSelectedPhoto(photo)}
                     aria-label={`View ${photo.title || "photo"}`}
                   >
-                    <PhotoImage src={getPhotoUrl(photo)} alt={photo.title} className="photo-image" />
+                    <PhotoImage
+                      src={getPhotoUrl(photo)}
+                      alt={photo.title}
+                      className="photo-image"
+                    />
                   </button>
 
                   <div className="photo-info">
-                    <span className="photo-category">{photo.category || "Other"}</span>
+                    <span className="photo-category">
+                      {photo.category || "Other"}
+                    </span>
+
                     <h3>{photo.title || "Untitled photo"}</h3>
-                    <p>{photo.description || "Explore this beautiful photo."}</p>
+
+                    <p>
+                      {photo.description || "Explore this beautiful photo."}
+                    </p>
+
                     <div className="photo-actions">
-                      <button className="photo-action-btn" onClick={() => handleDownload(photo)}>
+                      <button
+                        className="photo-action-btn"
+                        onClick={() => handleDownload(photo)}
+                      >
                         Download
                       </button>
-                      <button className="photo-action-btn" onClick={() => setSelectedPhoto(photo)}>
+
+                      <button
+                        className="photo-action-btn"
+                        onClick={() => setSelectedPhoto(photo)}
+                      >
                         View Details
                       </button>
                     </div>
@@ -861,6 +977,7 @@ export default function App() {
             <div className="empty-state">
               <h3>No photos found</h3>
               <p>Try another search term or select a different category.</p>
+
               <button
                 className="login-btn"
                 onClick={() => {
@@ -877,6 +994,7 @@ export default function App() {
         <section className="about-section" id="about">
           <p className="tagline">ABOUT PHOTONEST</p>
           <h2>Every photo has a story</h2>
+
           <p>
             PhotoNest is an image gallery platform where you can explore
             photographs, search by category, and discover new inspiration.
@@ -886,13 +1004,19 @@ export default function App() {
       </main>
 
       <footer className="footer">
-        <a className="logo" href="#home">Photo<span>nest</span></a>
+        <a className="logo" href="#home">
+          Photo<span>nest</span>
+        </a>
+
         <p>Discover. Explore. Get inspired.</p>
         <p>© {new Date().getFullYear()} PhotoNest</p>
       </footer>
 
       {showLogin && (
-        <div className="modal-overlay" onClick={() => setShowLogin(false)}>
+        <div
+          className="modal-overlay"
+          onClick={() => setShowLogin(false)}
+        >
           <div
             className="auth-modal"
             role="dialog"
@@ -900,26 +1024,52 @@ export default function App() {
             aria-labelledby="auth-title"
             onClick={(event) => event.stopPropagation()}
           >
-            <button className="modal-close" aria-label="Close login window" onClick={() => setShowLogin(false)}>
+            <button
+              className="modal-close"
+              aria-label="Close login window"
+              onClick={() => setShowLogin(false)}
+            >
               ×
             </button>
 
             <p className="tagline">WELCOME TO PHOTONEST</p>
-            <h2 id="auth-title">{isSignup ? "Create account" : "Welcome back"}</h2>
-            <p>{isSignup ? "Sign up to start managing your photos." : "Log in to manage your photo collection."}</p>
+
+            <h2 id="auth-title">
+              {isSignup ? "Create account" : "Welcome back"}
+            </h2>
+
+            <p>
+              {isSignup
+                ? "Sign up to start managing your photos."
+                : "Log in to manage your photo collection."}
+            </p>
 
             <form onSubmit={handleAuth} className="auth-form">
               {isSignup && (
                 <>
                   <label htmlFor="auth-name">Full name</label>
-                  <input id="auth-name" name="name" type="text" required placeholder="Enter your name" />
+                  <input
+                    id="auth-name"
+                    name="name"
+                    type="text"
+                    required
+                    placeholder="Enter your name"
+                  />
                 </>
               )}
 
               <label htmlFor="auth-email">Email address</label>
-              <input id="auth-email" name="email" type="email" required autoComplete="email" placeholder="Enter your email" />
+              <input
+                id="auth-email"
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+                placeholder="Enter your email"
+              />
 
               <label htmlFor="auth-password">Password</label>
+
               <div className="password-field">
                 <input
                   id="auth-password"
@@ -927,23 +1077,47 @@ export default function App() {
                   type={showPassword ? "text" : "password"}
                   minLength={6}
                   required
-                  autoComplete={isSignup ? "new-password" : "current-password"}
+                  autoComplete={
+                    isSignup ? "new-password" : "current-password"
+                  }
                   placeholder="Enter your password"
                 />
-                <button type="button" className="password-toggle" onClick={() => setShowPassword((previous) => !previous)}>
+
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() =>
+                    setShowPassword((previous) => !previous)
+                  }
+                >
                   {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
 
-              {authMessage && <p className="auth-message" role="status">{authMessage}</p>}
+              {authMessage && (
+                <p className="auth-message" role="status">
+                  {authMessage}
+                </p>
+              )}
 
-              <button className="signup-btn auth-submit" type="submit" disabled={loading}>
-                {loading ? "Please wait..." : isSignup ? "Create Account" : "Login"}
+              <button
+                className="signup-btn auth-submit"
+                type="submit"
+                disabled={loading}
+              >
+                {loading
+                  ? "Please wait..."
+                  : isSignup
+                  ? "Create Account"
+                  : "Login"}
               </button>
             </form>
 
             <p className="auth-switch">
-              {isSignup ? "Already have an account?" : "New to PhotoNest?"}{" "}
+              {isSignup
+                ? "Already have an account?"
+                : "New to PhotoNest?"}{" "}
+
               <button
                 type="button"
                 onClick={() => {
@@ -960,7 +1134,10 @@ export default function App() {
       )}
 
       {selectedPhoto && (
-        <div className="modal-overlay photo-modal-overlay" onClick={() => setSelectedPhoto(null)}>
+        <div
+          className="modal-overlay photo-modal-overlay"
+          onClick={() => setSelectedPhoto(null)}
+        >
           <div
             className="photo-detail-modal"
             role="dialog"
@@ -968,17 +1145,35 @@ export default function App() {
             aria-label="Photo details"
             onClick={(event) => event.stopPropagation()}
           >
-            <button className="modal-close" aria-label="Close photo details" onClick={() => setSelectedPhoto(null)}>
+            <button
+              className="modal-close"
+              aria-label="Close photo details"
+              onClick={() => setSelectedPhoto(null)}
+            >
               ×
             </button>
 
-            <PhotoImage src={getPhotoUrl(selectedPhoto)} alt={selectedPhoto.title} className="detail-image" />
+            <PhotoImage
+              src={getPhotoUrl(selectedPhoto)}
+              alt={selectedPhoto.title}
+              className="detail-image"
+            />
 
             <div className="detail-content">
-              <span className="photo-category">{selectedPhoto.category || "Other"}</span>
+              <span className="photo-category">
+                {selectedPhoto.category || "Other"}
+              </span>
+
               <h2>{selectedPhoto.title || "Untitled photo"}</h2>
-              <p>{selectedPhoto.description || "Explore this beautiful photo."}</p>
-              <button className="signup-btn" onClick={() => handleDownload(selectedPhoto)}>
+
+              <p>
+                {selectedPhoto.description || "Explore this beautiful photo."}
+              </p>
+
+              <button
+                className="signup-btn"
+                onClick={() => handleDownload(selectedPhoto)}
+              >
                 Download Photo
               </button>
             </div>
